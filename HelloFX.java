@@ -3,35 +3,34 @@ Author: Kaveeshan Sathasivam
 Date Created: June 2nd, 2026
 Date Last Modified: June 3rd, 2026*/
 
-
 /* first do menu screen, then instructions, then start game input the gameboard
 words then figure out how to do the correct button stuff for those words then
 do the grouping of the words and like how to display a right answer
-and wrong answer and then mistake and scoring system and then yea - order of things will
-probably change*/ 
+and wrong answer and then mistake system and then yea - order of things will
+probably change*/
 
+//menu and instructions are done, gameboard isn't, word sets haven't been imported in
+// need to comment code after done
 
 import javafx.application.Application;
-import javafx.geometry.Pos; //added
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
-import javafx.scene.control.Button; //added
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.layout.VBox; //added
-import javafx.scene.layout.StackPane;  
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
 import javafx.scene.paint.Color;
-
-
+import javafx.scene.text.Text;
 
 public class HelloFX extends Application {
 
     @Override
     public void start(Stage stage) {
-        
+
         // TITLE
-        
+
         Label title = new Label("CONNECTIONS");
 
         title.setStyle(
@@ -39,18 +38,25 @@ public class HelloFX extends Application {
                 "-fx-font-weight: bold;"
         );
 
-       
-        // BUTTONS
-       
+        // MENU BUTTONS
+
         Button startButton = new Button("Start Game");
         Button instructionsButton = new Button("Instructions");
         Button exitButton = new Button("Exit");
 
-        
-        // LAYOUT (MENU SCREEN)
-       
+        // MENU LAYOUT
+
         VBox menuLayout = new VBox(20);
-        menuLayout.setBackground(new Background(new BackgroundFill(Color.BLUEVIOLET, null, null)));
+
+        menuLayout.setBackground(
+                new Background(
+                        new BackgroundFill(
+                                Color.BLUEVIOLET,
+                                null,
+                                null
+                        )
+                )
+        );
 
         menuLayout.getChildren().addAll(
                 title,
@@ -61,44 +67,135 @@ public class HelloFX extends Application {
 
         menuLayout.setAlignment(Pos.CENTER);
 
-        
-        // SCENE
-       
+        // MENU SCENE
+
+
         Scene menuScene = new Scene(menuLayout, 800, 600);
+
+
+        // INSTRUCTIONS SCREEN
+
+        Label instructionsTitle = new Label("How To Play");
+
+        instructionsTitle.setStyle(
+                "-fx-font-size: 24;" +
+                "-fx-font-weight: bold;"
+        );
+
+        Text instructionsText = new Text(
+
+                "Find four groups of four related words.\n\n" +
+
+                "Select four words that belong together\n" +
+                "and submit your answer.\n\n" +
+
+                "If your group is correct, the category\n" +
+                "will be solved.\n\n" +
+
+                "If your group isn't correct, then you must try \n" +
+                "again to match another set of 4 words.\n\n" +
+
+                "You only get 4 mistakes.\n\n" +
+
+                "Solve all four categories to win."
+        );
+
+        Button backButton = new Button("Back To Menu");
+
+        VBox instructionsLayout = new VBox(20);
+
+        instructionsLayout.getChildren().addAll(
+                instructionsTitle,
+                instructionsText,
+                backButton
+        );
+
+        instructionsLayout.setAlignment(Pos.CENTER);
+
+        instructionsLayout.setBackground(
+                new Background(
+                        new BackgroundFill(
+                                Color.LIGHTBLUE,
+                                null,
+                                null
+                        )
+                )
+        );
+
+        Scene instructionsScene =
+                new Scene(instructionsLayout, 800, 600);
+
+        // GAME SCREEN PLACEHOLDER
+
+        Label gameTitle =
+                new Label("Connections Game Board");
+
+        gameTitle.setStyle(
+                "-fx-font-size: 24;" +
+                "-fx-font-weight: bold;"
+        );
+
+        Label gameMessage =
+                new Label("Game board not done yet");  //game board needs to be done
+
+        VBox gameLayout = new VBox(20);
+
+        gameLayout.getChildren().addAll(
+                gameTitle,
+                gameMessage
+        );
+
+        gameLayout.setAlignment(Pos.CENTER);
+
+        gameLayout.setBackground(
+                new Background(
+                        new BackgroundFill(
+                                Color.LIGHTGREEN,
+                                null,
+                                null
+                        )
+                )
+        );
+
+        Scene gameScene =
+                new Scene(gameLayout, 800, 600);
+
+        // STAGE
 
         stage.setTitle("Connections");
         stage.setScene(menuScene);
         stage.show();
 
-        
         // BUTTON ACTIONS
-        
 
-        // Exit game   - this works
-        exitButton.setOnAction(e ->   // e means event - if the event happens, then the code is executed 
+        // Exit game
+        exitButton.setOnAction(e ->
         {
             stage.close();
         });
 
-        // Start game (placeholder for rn)   the visuals dont change but button works
-        startButton.setOnAction(e ->
-        {
-            System.out.println("Start Game clicked - placeholder rn");
-        });
-
-        // Instructions (placeholder for now) the visual dont change but button works
+        // Open instructions screen
         instructionsButton.setOnAction(e ->
         {
-            System.out.println("Instructions clicked - placeholder rn");
+            stage.setScene(instructionsScene);
         });
+
+        // Back to menu
+        backButton.setOnAction(e ->
+        {
+            stage.setScene(menuScene);
+        });
+
+        // Open game screen
+        startButton.setOnAction(e ->
+        {
+            stage.setScene(gameScene);
+        });
+
     }
 
     public static void main(String[] args)
     {
         launch(args);
     }
-
-    }
-
-   
-
+}
