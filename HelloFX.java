@@ -1,29 +1,33 @@
 /*File: ICS3U Culminating - Connections
 Author: Kaveeshan Sathasivam 
 Date Created: June 2nd, 2026
-Date Last Modified: June 5th, 2026*/
+Date Last Modified: June 8th, 2026*/
 
-/* first do menu screen, then instructions, then start game input the gameboard
-words then figure out how to do the correct button stuff for those words then
-do the grouping of the words and like how to display a right answer
-and wrong answer and then mistake system and then yea - order of things will
-probably change*/
 
-//menu is done and gameboards with words and shuffle is done
-//need to do selection - and submission, mistake system, correct category system 
-// and reveal the words, and Win and Lose condition, and then be able to play the game multiple times
-// also change words and comment
+// have to do commenting, and create play again button that returns user to menu
+
+
+
+/*
+Features:
+- Menu, Instructions, Game screens
+- 10 full puzzles (4 groups of 4 words)
+- Random puzzle selection
+- 4x4 word grid
+- Word selection (max 4)
+- Submit button
+- Mistake system (4 lives)
+- Win/Lose conditions
+- Play again button (returns user to the menu)
+*/
 
 import javafx.application.Application;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.layout.VBox;
-import javafx.scene.layout.GridPane;
+import javafx.scene.layout.*;
 import javafx.stage.Stage;
-import javafx.scene.layout.Background;
-import javafx.scene.layout.BackgroundFill;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 
@@ -32,105 +36,130 @@ import java.util.Random;
 
 public class HelloFX extends Application {
 
+    
+    // GAME 
     ArrayList<Puzzle> puzzles = new ArrayList<>();
     Random rand = new Random();
 
     Button[] wordButtons = new Button[16];
 
+    ArrayList<Button> selectedButtons = new ArrayList<>();
+    ArrayList<String> selectedWords = new ArrayList<>();
+
+    int mistakes = 4;
+    int solvedGroups = 0;
+    boolean gameOver = false;
+
+    Label mistakeLabel = new Label("Mistakes: 4");
+    Label messageLabel = new Label("");
+    Label endLabel = new Label("");
+
     @Override
     public void start(Stage stage) {
 
-        // PUZZLES 
-     
+        
+        // PUZZLES (10 FULL BOARDS)
+        
 
-        String[] w1 = {"STACK","HEAP","NODE","TREE","CLASS","OBJECT","POINTER","MEMORY","LOOP","FUNCTION","GRAPH","DATA","FLOW","SYSTEM","ROOT","BRANCH"};
-        String[] c1 = {"Computing","Memory","Structure","Flow"};
+        String[][] g1 = {
+                {"APPLE","BANANA","ORANGE","PEAR"},
+                {"DOG","CAT","RABBIT","HAMSTER"},
+                {"SOCCER","HOCKEY","TENNIS","GOLF"},
+                {"RED","BLUE","GREEN","YELLOW"}
+        };
+        String[] c1 = {"Fruits","Pets","Sports","Colours"};
 
-        String[] w2 = {"PHOTON","LENS","WAVE","ENERGY","BRIGHT","DARK","MOOD","SAD","HAPPY","CLICK","PRESS","SCREEN","BUTTON","FEEL","LIGHT","PARTICLE"};
-        String[] c2 = {"Physics","Light","Emotion","Interface"};
+        String[][] g2 = {
+                {"JAVA","PYTHON","C++","JAVASCRIPT"},
+                {"STACK","QUEUE","ARRAY","LIST"},
+                {"CPU","GPU","RAM","SSD"},
+                {"LOGIN","SIGNUP","SEARCH","UPLOAD"}
+        };
+        String[] c2 = {"Languages","Data Structures","Hardware","Web Actions"};
 
-        String[] w3 = {"CLOCK","TIMER","SECOND","MINUTE","FAST","SLOW","QUEUE","LOAD","PROCESS","BANK","CASH","CREDIT","DELAY","CACHE","STORE","FLOW"};
-        String[] c3 = {"Time","Speed","System","Finance"};
+        String[][] g3 = {
+                {"LION","TIGER","BEAR","WOLF"},
+                {"EARTH","MARS","VENUS","JUPITER"},
+                {"IRON","GOLD","SILVER","COPPER"},
+                {"WINTER","SUMMER","SPRING","FALL"}
+        };
+        String[] c3 = {"Animals","Planets","Metals","Seasons"};
 
-        String[] w4 = {"CODE","SYNTAX","LOGIC","IDEA","THOUGHT","DREAM","MIND","THINK","ALGORITHM","VARIABLE","FUNCTION","SYSTEM","REALITY","MATRIX","LOOP","MEMORY"};
-        String[] c4 = {"Code","Mind","Logic","Dream"};
+        String[][] g4 = {
+                {"SHADOW","LIGHT","DARK","BRIGHT"},
+                {"FAST","SLOW","QUICK","SPEED"},
+                {"HAPPY","SAD","ANGRY","EXCITED"},
+                {"HOT","COLD","WARM","COOL"}
+        };
+        String[] c4 = {"Light","Speed","Emotion","Temperature"};
 
-        String[] w5 = {"TREE","ROOT","LEAF","FOREST","STREAM","RIVER","NODE","EDGE","LINK","PATH","GRAPH","DATA","NETWORK","FLOW","CURRENT","BRANCH"};
-        String[] c5 = {"Nature","Network","Structure","Data"};
+        String[][] g5 = {
+                {"TABLE","CHAIR","SOFA","DESK"},
+                {"CAR","BUS","TRAIN","BIKE"},
+                {"RIVER","OCEAN","LAKE","STREAM"},
+                {"FIRE","WATER","EARTH","AIR"}
+        };
+        String[] c5 = {"Furniture","Transport","Water","Elements"};
 
-        String[] w6 = {"CLASS","OBJECT","INSTANCE","RECORD","TYPE","LABEL","NAME","ID","ENTITY","STRUCT","FILE","DATA","POINTER","MEMORY","NODE","SYSTEM"};
-        String[] c6 = {"OOP","Identity","Data","System"};
+        String[][] g6 = {
+                {"ATOM","MOLECULE","CELL","TISSUE"},
+                {"EYE","EAR","NOSE","MOUTH"},
+                {"BRAIN","HEART","LUNG","LIVER"},
+                {"NERVE","MUSCLE","BONE","SKIN"}
+        };
+        String[] c6 = {"Chemistry","Senses","Organs","Body Parts"};
 
-        String[] w7 = {"SIGNAL","NOISE","WAVE","ERROR","BEEP","TONE","FREQUENCY","CLICK","INPUT","OUTPUT","HAPPY","SAD","FEEL","SYSTEM","DISTORT","PROCESS"};
-        String[] c7 = {"Signal","Emotion","System","Sound"};
+        String[][] g7 = {
+                {"LOGIN","PASSWORD","USERNAME","EMAIL"},
+                {"GOOGLE","YOUTUBE","GMAIL","DRIVE"},
+                {"CLICK","SCROLL","TYPE","DRAG"},
+                {"UPLOAD","DOWNLOAD","DELETE","SAVE"}
+        };
+        String[] c7 = {"Security","Apps","Actions","File Ops"};
 
-        String[] w8 = {"SPACE","VOID","DIMENSION","UNIVERSE","REALITY","SIM","MATRIX","CODE","FUNCTION","OBJECT","CLASS","VARIABLE","TIME","FIELD","SYSTEM","LOOP"};
-        String[] c8 = {"Space","Reality","Code","Structure"};
+        String[][] g8 = {
+                {"CLOCK","WATCH","TIMER","CALENDAR"},
+                {"MORNING","NOON","EVENING","NIGHT"},
+                {"PAST","PRESENT","FUTURE","TIME"},
+                {"YEAR","MONTH","DAY","WEEK"}
+        };
+        String[] c8 = {"Time Tools","Day Cycle","Time Concepts","Units"};
 
-        String[] w9 = {"BRAIN","HEART","BODY","CPU","CHIP","RAM","MEMORY","PROCESS","ROOT","TREE","LEAF","FLOW","IDEA","CODE","SYSTEM","NODE"};
-        String[] c9 = {"Human","Machine","Nature","System"};
+        String[][] g9 = {
+                {"MATH","SCIENCE","ENGLISH","HISTORY"},
+                {"BOOK","PEN","PAPER","ERASER"},
+                {"TEACHER","STUDENT","PRINCIPAL","COACH"},
+                {"SCHOOL","HOME","CLASSROOM","LIBRARY"}
+        };
+        String[] c9 = {"Subjects","Supplies","People","Places"};
 
-        String[] w10 = {"FLOW","CONTROL","MOVE","PRESS","INPUT","OUTPUT","SAD","HAPPY","FEEL","SIGNAL","SYSTEM","PATH","QUEUE","ERROR","PROCESS","LOOP"};
-        String[] c10 = {"Flow","Control","Emotion","System"};
+        String[][] g10 = {
+                {"KING","QUEEN","ROOK","PAWN"},
+                {"CHECK","MATE","STALEMATE","DRAW"},
+                {"BLACK","WHITE","BOARD","GAME"},
+                {"MOVE","STRATEGY","ATTACK","DEFEND"}
+        };
+        String[] c10 = {"Chess Pieces","Outcomes","Game Setup","Actions"};
 
-        String[] w11 = {"CLICK","PRESS","BUTTON","SCREEN","LIGHT","ENERGY","FORCE","WAVE","IDEA","THOUGHT","FUNCTION","CLASS","OBJECT","VARIABLE","SYSTEM","LOGIC"};
-        String[] c11 = {"Interface","Physics","Thought","Code"};
-
-        String[] w12 = {"NODE","LINK","GRAPH","TREE","EDGE","PATH","WORD","LANGUAGE","LOGIC","IDEA","MIND","THOUGHT","FLOW","DATA","SYSTEM","THINK"};
-        String[] c12 = {"Structure","Language","Mind","Network"};
-
-        String[] w13 = {"CACHE","LOAD","SAVE","STORE","FILE","DATA","MEMORY","CLOCK","TIME","DELAY","PROCESS","FLOW","BANK","QUEUE","HISTORY","SYSTEM"};
-        String[] c13 = {"Storage","Time","System","Flow"};
-
-        String[] w14 = {"REALITY","SIM","DREAM","CODE","MATRIX","CLASS","OBJECT","FUNCTION","VARIABLE","SYSTEM","LOOP","THINK","IDEA","MEMORY","TIME","PROCESS"};
-        String[] c14 = {"Reality","Simulation","Code","Mind"};
-
-        String[] w15 = {"SIGNAL","INPUT","OUTPUT","CHOICE","DECISION","LOGIC","SAD","HAPPY","FEEL","PRESS","FLOW","SYSTEM","ERROR","PROCESS","CONTROL","THOUGHT"};
-        String[] c15 = {"Decision","Signal","Emotion","System"};
-
-        String[] w16 = {"THREAD","PROCESS","STACK","HEAP","POINTER","MEMORY","FUNCTION","VARIABLE","CLASS","OBJECT","LOOP","SYSTEM","DATA","GRAPH","NODE","ALGORITHM"};
-        String[] c16 = {"Computing","Memory","Structure","Algorithm"};
-
-        String[] w17 = {"TREE","ROOT","BRANCH","LEAF","CODE","IDEA","THINK","MIND","CLOCK","TIME","FLOW","SYSTEM","MEMORY","FUNCTION","PROCESS","DATA"};
-        String[] c17 = {"Nature","Code","Mind","Time"};
-
-        String[] w18 = {"SIGNAL","WAVE","ENERGY","LIGHT","CLICK","PRESS","BUTTON","SCREEN","HAPPY","SAD","FEEL","FORCE","SYSTEM","INPUT","OUTPUT","PROCESS"};
-        String[] c18 = {"Signal","Energy","Interface","Emotion"};
-
-        String[] w19 = {"VOID","MATRIX","REALITY","SIM","CODE","CLASS","OBJECT","FUNCTION","LOOP","SYSTEM","MEMORY","DATA","FLOW","TIME","THINK","PROCESS"};
-        String[] c19 = {"Abstract","Code","Reality","System"};
-
-        String[] w20 = {"IDEA","THINK","MIND","MEMORY","CODE","SYSTEM","FUNCTION","LOOP","CLASS","OBJECT","DATA","FLOW","TIME","PROCESS","REALITY","VARIABLE"};
-        String[] c20 = {"Mind","Code","System","Reality"};
-
-        puzzles.add(new Puzzle(w1,c1));
-        puzzles.add(new Puzzle(w2,c2));
-        puzzles.add(new Puzzle(w3,c3));
-        puzzles.add(new Puzzle(w4,c4));
-        puzzles.add(new Puzzle(w5,c5));
-        puzzles.add(new Puzzle(w6,c6));
-        puzzles.add(new Puzzle(w7,c7));
-        puzzles.add(new Puzzle(w8,c8));
-        puzzles.add(new Puzzle(w9,c9));
-        puzzles.add(new Puzzle(w10,c10));
-        puzzles.add(new Puzzle(w11,c11));
-        puzzles.add(new Puzzle(w12,c12));
-        puzzles.add(new Puzzle(w13,c13));
-        puzzles.add(new Puzzle(w14,c14));
-        puzzles.add(new Puzzle(w15,c15));
-        puzzles.add(new Puzzle(w16,c16));
-        puzzles.add(new Puzzle(w17,c17));
-        puzzles.add(new Puzzle(w18,c18));
-        puzzles.add(new Puzzle(w19,c19));
-        puzzles.add(new Puzzle(w20,c20));
+        puzzles.add(new Puzzle(g1,c1));
+        puzzles.add(new Puzzle(g2,c2));
+        puzzles.add(new Puzzle(g3,c3));
+        puzzles.add(new Puzzle(g4,c4));
+        puzzles.add(new Puzzle(g5,c5));
+        puzzles.add(new Puzzle(g6,c6));
+        puzzles.add(new Puzzle(g7,c7));
+        puzzles.add(new Puzzle(g8,c8));
+        puzzles.add(new Puzzle(g9,c9));
+        puzzles.add(new Puzzle(g10,c10));
 
         Puzzle currentPuzzle = puzzles.get(rand.nextInt(puzzles.size()));
 
-       
-        // MENU SCREEN 
-       
+        
+        // MENU SCREEN
+
 
         Label title = new Label("CONNECTIONS");
+
         Button startButton = new Button("Start Game");
         Button instructionsButton = new Button("Instructions");
         Button exitButton = new Button("Exit");
@@ -142,14 +171,13 @@ public class HelloFX extends Application {
 
         Scene menuScene = new Scene(menuLayout, 800, 600);
 
-        
-        // INSTRUCTIONS 
-      
+        // INSTRUCTIONS SCREEN
 
         Label instructionsTitle = new Label("How To Play");
+
         Text instructionsText = new Text(
                 "Find 4 groups of 4 related words.\n\n" +
-                "Select 4 words that belong together.\n\n" +
+                "Select 4 words and press Submit.\n\n" +
                 "You only get 4 mistakes.\n\n" +
                 "Solve all groups to win."
         );
@@ -163,25 +191,28 @@ public class HelloFX extends Application {
 
         Scene instructionsScene = new Scene(instructionsLayout, 800, 600);
 
-        
-        // SHUFFLE 
-   
+  
+        // SHUFFLE WORDS
 
         ArrayList<String> words = new ArrayList<>();
-        for (String w : currentPuzzle.getWords()) words.add(w);
 
-        for (int i = 0; i < words.size(); i++) {
-            int randIndex = (int)(Math.random() * words.size());
-            String temp = words.get(i);
-            words.set(i, words.get(randIndex));
-            words.set(randIndex, temp);
+        for (String[] group : currentPuzzle.getGroups()) {
+            for (String w : group) {
+                words.add(w);
+            }
         }
 
-        
-        // GAME SCREEN 
-        
+        for (int i = 0; i < words.size(); i++) {
+            int r = (int)(Math.random() * words.size());
+            String temp = words.get(i);
+            words.set(i, words.get(r));
+            words.set(r, temp);
+        }
 
-        VBox gameLayout = new VBox(20);
+
+        // GAME SCREEN
+
+        VBox gameLayout = new VBox(10);
         gameLayout.setAlignment(Pos.CENTER);
 
         Label gameTitle = new Label("CONNECTIONS GAME");
@@ -192,25 +223,103 @@ public class HelloFX extends Application {
         grid.setVgap(10);
 
         for (int i = 0; i < 16; i++) {
+
             wordButtons[i] = new Button(words.get(i));
-            wordButtons[i].setPrefWidth(150);
+            wordButtons[i].setPrefWidth(120);
 
             int index = i;
 
-            wordButtons[i].setOnAction(e ->
-                System.out.println("Clicked: " + wordButtons[index].getText())
-            );
+            wordButtons[i].setOnAction(e -> {
+
+                if (gameOver) return;
+
+                Button b = wordButtons[index];
+
+                if (selectedButtons.contains(b)) {
+                    selectedButtons.remove(b);
+                    selectedWords.remove(b.getText());
+                    b.setStyle("");
+                }
+                else if (selectedButtons.size() < 4) {
+                    selectedButtons.add(b);
+                    selectedWords.add(b.getText());
+                    b.setStyle("-fx-background-color: yellow;");
+                }
+            });
 
             grid.add(wordButtons[i], i % 4, i / 4);
         }
 
-        gameLayout.getChildren().addAll(gameTitle, grid);
+        Button submitButton = new Button("Submit");
+
+submitButton.setOnAction(e -> {
+
+    if (gameOver) return;
+
+    if (selectedWords.size() != 4) {
+        messageLabel.setText("Select 4 words!");
+        return;
+    }
+
+    boolean correct = checkGroup(selectedWords, currentPuzzle.getGroups());
+
+    if (correct) {
+
+        messageLabel.setText("Correct!");
+
+        for (Button b : selectedButtons) {
+            b.setDisable(true);
+            b.setStyle("-fx-background-color: lightgreen;");
+        }
+
+        solvedGroups++;
+
+        if (solvedGroups == 4) {
+            gameOver = true;
+            endLabel.setText("YOU WIN!");
+            submitButton.setDisable(true);
+        }
+
+    } else {
+
+        mistakes--;
+        mistakeLabel.setText("Mistakes: " + mistakes);
+        messageLabel.setText("Wrong!");
+
+        // Remove yellow highlight from incorrect selection
+        for (Button b : selectedButtons) {
+            b.setStyle("");
+        }
+
+        if (mistakes == 0) {
+            gameOver = true;
+            endLabel.setText("GAME OVER");
+
+            submitButton.setDisable(true);
+
+            for (Button b : wordButtons) {
+                b.setDisable(true);
+            }
+        }
+    }
+
+    selectedButtons.clear();
+    selectedWords.clear();
+});
+
+        gameLayout.getChildren().addAll(
+                gameTitle,
+                mistakeLabel,
+                messageLabel,
+                grid,
+                submitButton,
+                endLabel
+        );
 
         Scene gameScene = new Scene(gameLayout, 800, 600);
 
-       
-        // STAGE 
-       
+  
+        // NAVIGATION
 
         stage.setTitle("Connections");
         stage.setScene(menuScene);
@@ -222,25 +331,48 @@ public class HelloFX extends Application {
         startButton.setOnAction(e -> stage.setScene(gameScene));
     }
 
+
+    // CHECK FUNCTION
+
+    public boolean checkGroup(ArrayList<String> selected, String[][] groups) {  
+        for (String[] group : groups) {
+
+            int count = 0;
+
+            for (String s : selected) { 
+                for (String g : group) {
+                    if (s.equals(g)) count++;
+                }
+            }
+
+            if (count == 4) return true;
+        }
+
+        return false;
+    }
+
     public static void main(String[] args) {
         launch(args);
     }
 }
 
-//PUZZLE CLASS 
-
 class Puzzle {
-    private String[] words;
-    private String[] categories;
+    
+    String[][] groups;
+    String[] categories;
 
-    public Puzzle(String[] words, String[] categories) {
-        this.words = words;
-        this.categories = categories;
+   
+    public Puzzle(String[][] gInput, String[] cInput) {
+        groups = gInput;       
+        categories = cInput;  
     }
 
-    public String[] getWords() {
-        return words;
+
+    public String[][] getGroups() {
+        return groups;         
     }
+
+
 
     public String[] getCategories() {
         return categories;
