@@ -1,12 +1,7 @@
 /*File: ICS3U Culminating - Connections
 Author: Kaveeshan Sathasivam 
 Date Created: June 2nd, 2026
-Date Last Modified: June 8th, 2026*/
-
-
-// have to do commenting, and create play again button that returns user to menu
-
-
+Date Last Modified: June 10th, 2026*/
 
 /*
 Features:
@@ -36,20 +31,24 @@ import java.util.Random;
 
 public class HelloFX extends Application {
 
-    
-    // GAME 
+    // GAME VARIABLES
+    // Holds all 10 puzzles 
     ArrayList<Puzzle> puzzles = new ArrayList<>();
     Random rand = new Random();
 
+    // Array to keep track of the 16 buttons on the grid
     Button[] wordButtons = new Button[16];
 
+    // Lists to track what the user currently has clicked
     ArrayList<Button> selectedButtons = new ArrayList<>();
     ArrayList<String> selectedWords = new ArrayList<>();
 
+    // Game tracking variables
     int mistakes = 4;
     int solvedGroups = 0;
     boolean gameOver = false;
 
+    // Text labels to show info on the screen
     Label mistakeLabel = new Label("Mistakes: 4");
     Label messageLabel = new Label("");
     Label endLabel = new Label("");
@@ -57,9 +56,8 @@ public class HelloFX extends Application {
     @Override
     public void start(Stage stage) {
 
-        
         // PUZZLES (10 FULL BOARDS)
-        
+        // Each puzzle has a 2D array for the 4x4 words, and a 1D array for the category names
 
         String[][] g1 = {
                 {"APPLE","BANANA","ORANGE","PEAR"},
@@ -141,6 +139,7 @@ public class HelloFX extends Application {
         };
         String[] c10 = {"Chess Pieces","Outcomes","Game Setup","Actions"};
 
+        // Adding all the puzzles to main list
         puzzles.add(new Puzzle(g1,c1));
         puzzles.add(new Puzzle(g2,c2));
         puzzles.add(new Puzzle(g3,c3));
@@ -152,18 +151,18 @@ public class HelloFX extends Application {
         puzzles.add(new Puzzle(g9,c9));
         puzzles.add(new Puzzle(g10,c10));
 
+        // Pick one random puzzle out of the 10 to use for this game
         Puzzle currentPuzzle = puzzles.get(rand.nextInt(puzzles.size()));
 
         
         // MENU SCREEN
-
-
         Label title = new Label("CONNECTIONS");
 
         Button startButton = new Button("Start Game");
         Button instructionsButton = new Button("Instructions");
         Button exitButton = new Button("Exit");
 
+        // Stacking menu items vertically and setting a background colour
         VBox menuLayout = new VBox(20);
         menuLayout.setAlignment(Pos.CENTER);
         menuLayout.setBackground(new Background(new BackgroundFill(Color.BLUEVIOLET, null, null)));
@@ -171,8 +170,8 @@ public class HelloFX extends Application {
 
         Scene menuScene = new Scene(menuLayout, 800, 600);
 
-        // INSTRUCTIONS SCREEN
 
+        // INSTRUCTIONS SCREEN 
         Label instructionsTitle = new Label("How To Play");
 
         Text instructionsText = new Text(
@@ -192,16 +191,16 @@ public class HelloFX extends Application {
         Scene instructionsScene = new Scene(instructionsLayout, 800, 600);
 
   
-        // SHUFFLE WORDS
-
+        //  SHUFFLE WORDS 
+        // takes the words from the current puzzle and turns them into a single list
         ArrayList<String> words = new ArrayList<>();
-
         for (String[] group : currentPuzzle.getGroups()) {
             for (String w : group) {
                 words.add(w);
             }
         }
 
+        //  random swapping to scramble the list of words
         for (int i = 0; i < words.size(); i++) {
             int r = (int)(Math.random() * words.size());
             String temp = words.get(i);
@@ -210,36 +209,39 @@ public class HelloFX extends Application {
         }
 
 
-        // GAME SCREEN
-
+        //GAME SCREEN 
         VBox gameLayout = new VBox(10);
         gameLayout.setAlignment(Pos.CENTER);
 
         Label gameTitle = new Label("CONNECTIONS GAME");
 
+        // Creating the 4x4 layout grid for the buttons
         GridPane grid = new GridPane();
         grid.setAlignment(Pos.CENTER);
         grid.setHgap(10);
         grid.setVgap(10);
 
+        // Loop to build the 16 buttons and set up what happens when you click them
         for (int i = 0; i < 16; i++) {
 
             wordButtons[i] = new Button(words.get(i));
             wordButtons[i].setPrefWidth(120);
 
-            int index = i;
+            int index = i; 
 
             wordButtons[i].setOnAction(e -> {
-
+                // If game is already over, don't let them click anything
                 if (gameOver) return;
 
                 Button b = wordButtons[index];
 
+                // If they click an already selected button, unselect it and remove the yellow highlight
                 if (selectedButtons.contains(b)) {
                     selectedButtons.remove(b);
                     selectedWords.remove(b.getText());
                     b.setStyle("");
                 }
+                // If it wasn't selected yet, and they have picked less than 4 words, select it
                 else if (selectedButtons.size() < 4) {
                     selectedButtons.add(b);
                     selectedWords.add(b.getText());
@@ -247,108 +249,150 @@ public class HelloFX extends Application {
                 }
             });
 
+            // automatically place buttons into columns and rows 
             grid.add(wordButtons[i], i % 4, i / 4);
         }
 
         Button submitButton = new Button("Submit");
+        Button menuButton = new Button("Return to Menu");
+        menuButton.setVisible(false); // Hidden until the game ends
 
-submitButton.setOnAction(e -> {
 
-    if (gameOver) return;
+        // SUBMIT BUTTON LOGIC 
+        submitButton.setOnAction(e -> {
 
-    if (selectedWords.size() != 4) {
-        messageLabel.setText("Select 4 words!");
-        return;
-    }
+            if (gameOver) return;
 
-    boolean correct = checkGroup(selectedWords, currentPuzzle.getGroups());
-
-    if (correct) {
-
-        messageLabel.setText("Correct!");
-
-        for (Button b : selectedButtons) {
-            b.setDisable(true);
-            b.setStyle("-fx-background-color: lightgreen;");
-        }
-
-        solvedGroups++;
-
-        if (solvedGroups == 4) {
-            gameOver = true;
-            endLabel.setText("YOU WIN!");
-            submitButton.setDisable(true);
-        }
-
-    } else {
-
-        mistakes--;
-        mistakeLabel.setText("Mistakes: " + mistakes);
-        messageLabel.setText("Wrong!");
-
-        // Remove yellow highlight from incorrect selection
-        for (Button b : selectedButtons) {
-            b.setStyle("");
-        }
-
-        if (mistakes == 0) {
-            gameOver = true;
-            endLabel.setText("GAME OVER");
-
-            submitButton.setDisable(true);
-
-            for (Button b : wordButtons) {
-                b.setDisable(true);
+            // Stop them if they try to check less than 4 words
+            if (selectedWords.size() != 4) {
+                messageLabel.setText("Select 4 words!");
+                return;
             }
-        }
-    }
 
-    selectedButtons.clear();
-    selectedWords.clear();
-});
+            // Call check function to see if the 4 chosen words match any category
+            boolean correct = checkGroup(selectedWords, currentPuzzle.getGroups());
 
+            if (correct) {
+                messageLabel.setText("Correct!");
+
+                // Lock the correct buttons and turn them green
+                for (Button b : selectedButtons) {
+                    b.setDisable(true);
+                    b.setStyle("-fx-background-color: lightgreen;");
+                }
+
+                solvedGroups++;
+
+                // If they found all 4 groups, they win
+                if (solvedGroups == 4) {
+                    gameOver = true;
+                    endLabel.setText("YOU WIN!");
+                    submitButton.setDisable(true);
+                    menuButton.setVisible(true); // Show the reset/menu button
+                }
+
+            } else {
+                // Take away a life if they were wrong
+                mistakes--;
+                mistakeLabel.setText("Mistakes: " + mistakes);
+                messageLabel.setText("Wrong!");
+
+                // Remove yellow highlight from incorrect selection so they can try again
+                for (Button b : selectedButtons) {
+                    b.setStyle("");
+                }
+
+                // If they run out of lives, it's game over
+                if (mistakes == 0) {
+                    gameOver = true;
+                    endLabel.setText("GAME OVER");
+
+                    submitButton.setDisable(true);
+                    menuButton.setVisible(true); // Show the reset/menu button
+
+                    // Freeze all buttons so they can't keep playing
+                    for (Button b : wordButtons) {
+                        b.setDisable(true);
+                    }
+                }
+            }
+
+            // Clear the temporary selection lists for the next turn
+            selectedButtons.clear();
+            selectedWords.clear();
+        });
+
+        // Add everything to the game layout view
         gameLayout.getChildren().addAll(
                 gameTitle,
                 mistakeLabel,
                 messageLabel,
                 grid,
                 submitButton,
-                endLabel
+                endLabel,
+                menuButton
         );
 
         Scene gameScene = new Scene(gameLayout, 800, 600);
 
   
-        // NAVIGATION
-
+        // NAVIGATION & WINDOW SETUP 
         stage.setTitle("Connections");
-        stage.setScene(menuScene);
+        stage.setScene(menuScene); // Launch into the main menu first
         stage.show();
 
+        // Screen switching 
         exitButton.setOnAction(e -> stage.close());
         instructionsButton.setOnAction(e -> stage.setScene(instructionsScene));
         backButton.setOnAction(e -> stage.setScene(menuScene));
         startButton.setOnAction(e -> stage.setScene(gameScene));
+        
+        // Return to menu button resets the game variables so it acts as a play again
+        menuButton.setOnAction(e -> {
+            // Reset game variables
+            mistakes = 4;
+            solvedGroups = 0;
+            gameOver = false;
+            
+            // Reset text labels
+            mistakeLabel.setText("Mistakes: 4");
+            messageLabel.setText("");
+            endLabel.setText("");
+            
+            // re-enable and clear button for a new game
+            for (Button b : wordButtons) {
+                b.setDisable(false);
+                b.setStyle("");
+            }
+            
+            submitButton.setDisable(false);
+            menuButton.setVisible(false);
+            
+            // Go back to the main menu scene
+            stage.setScene(menuScene);
+        });
     }
 
 
-    // CHECK FUNCTION
-
+    // CHECK FUNCTION 
+    // Loops through the solution groups to see if the 4 chosen words fit perfectly into one
     public boolean checkGroup(ArrayList<String> selected, String[][] groups) {  
         for (String[] group : groups) {
 
             int count = 0;
 
+            // Compare each selected word against each word in the current solution group
             for (String s : selected) { 
                 for (String g : group) {
                     if (s.equals(g)) count++;
                 }
             }
 
+            // If all 4 selected words matched this specific group, it's a correct match
             if (count == 4) return true;
         }
 
-        return false;
+        return false; // If the loop finishes and didn't find a group with 4 matches, it's incorrect
     }
 
     public static void main(String[] args) {
@@ -356,24 +400,25 @@ submitButton.setOnAction(e -> {
     }
 }
 
+//PUZZLE CLASS 
+// to store a single game board's answers and categories easily
 class Puzzle {
     
     String[][] groups;
     String[] categories;
 
-   
+    //  assign values when a new Puzzle is initialized
     public Puzzle(String[][] gInput, String[] cInput) {
         groups = gInput;       
         categories = cInput;  
     }
 
-
+    // retrieve the words
     public String[][] getGroups() {
         return groups;         
     }
 
-
-
+    //  retrieve the category names
     public String[] getCategories() {
         return categories;
     }
