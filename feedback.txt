@@ -1,0 +1,12 @@
+K(30%): 100
+I(30%): 90
+C(10%): 100
+A(30%): 95
+95.5%
+
+You are selecting the puzzle when the program starts instead of when they choose the start game button.
+
+This means you will always play the same game over and over until you exit and restart the program completely instead of just the round.
+
+You keep track of the groupings but then never use it in the program to show them when they win.
+The correct answers were never separated from the rest of the incorrect like you said you would do in your outline!
